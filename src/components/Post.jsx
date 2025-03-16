@@ -35,6 +35,20 @@ export function Post({ author, publishedAt, content }) {
     setNewCommentText(event.target.value);
   }
 
+  function handleNewCommentInvalid(event) {
+    event.target.setCustomValidity('Esse campo é obrigatório!');
+  }
+
+  function deleteComment(commentToDelete) {
+    const commentDeleteOne = comments.filter(comment => {
+      return comment !== commentToDelete;
+    });
+
+    setComments(commentDeleteOne);
+  }
+
+  const isNewCommentEmpty = newCommentText.length === 0;
+
   return (
     <article className={styles.post}>
       <header>
@@ -58,10 +72,11 @@ export function Post({ author, publishedAt, content }) {
         {content.map(line => {
           if (line.type === 'paragraph') {
             return <p key={line.content}>{line.content}</p>;
-          } else if (line.type === 'link') {
+          }
+          if (line.type === 'link') {
             return (
               <p key={line.content}>
-                <a href='#'>{line.content}</a>
+                <a href='/'>{line.content}</a>
               </p>
             );
           }
@@ -78,11 +93,17 @@ export function Post({ author, publishedAt, content }) {
           name='comment'
           value={newCommentText}
           placeholder='Deixe um comentário'
+          onInvalid={handleNewCommentInvalid}
           onChange={handleNewCommentChange}
         />
 
         <footer>
-          <button type='submit'>Publicar</button>
+          <button
+            type='submit'
+            disabled={isNewCommentEmpty}
+          >
+            Publicar
+          </button>
         </footer>
       </form>
 
@@ -92,6 +113,7 @@ export function Post({ author, publishedAt, content }) {
             <Comment
               key={comment}
               content={comment}
+              onDeleteComment={deleteComment}
             />
           );
         })}
